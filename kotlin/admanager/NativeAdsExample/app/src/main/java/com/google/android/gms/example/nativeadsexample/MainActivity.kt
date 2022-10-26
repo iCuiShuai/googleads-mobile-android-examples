@@ -16,8 +16,11 @@
 
 package com.google.android.gms.example.nativeadsexample
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -39,17 +42,18 @@ import com.google.android.gms.example.nativeadsexample.databinding.AdUnifiedBind
 import java.util.*
 
 private const val TAG = "MainActivity"
-const val AD_MANAGER_AD_UNIT_ID = "/6499/example/native"
+const val AD_MANAGER_AD_UNIT_ID = "/6499/example/native-video"
 const val SIMPLE_TEMPLATE_ID = "10104090"
 
 var currentNativeAd: NativeAd? = null
 var currentCustomFormatAd: NativeCustomFormatAd? = null
 
 /** A simple activity class that displays native ad formats. */
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), View.OnClickListener {
 
   private lateinit var customTemplateBinding: AdSimpleCustomTemplateBinding
   private lateinit var mainActivityBinding: ActivityMainBinding
+  private lateinit var handler: Handler
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -73,6 +77,8 @@ class MainActivity : AppCompatActivity() {
       mainActivityBinding.nativeadsCheckbox.isChecked,
       mainActivityBinding.customtemplateCheckbox.isChecked
     )
+    this.handler = Handler(Looper.getMainLooper())
+    mainActivityBinding.btnReRender.setOnClickListener(this)
   }
 
   /**
@@ -355,4 +361,34 @@ class MainActivity : AppCompatActivity() {
     currentCustomFormatAd?.destroy()
     super.onDestroy()
   }
+
+  override fun onPause() {
+    super.onPause()
+    currentNativeAd?.let {
+      if (it.mediaContent?.hasVideoContent() == true) {
+        it.mediaContent?.videoController?.pause()
+      }
+    }
+  }
+
+  override fun onClick(v: View?) {
+    if (v?.id == R.id.btn_re_render) {
+      currentNativeAd?.let {
+        val unifiedAdBinding = AdUnifiedBinding.inflate(layoutInflater)
+        populateNativeAdView(it, unifiedAdBinding)
+        mainActivityBinding.adFrame.removeAllViews()
+        mainActivityBinding.adFrame.addView(unifiedAdBinding.root)
+        handler.postDelayed({ mockPressHomeKey() }, 200)
+      }
+    }
+  }
+
+  private fun mockPressHomeKey() {
+    val intent = Intent(Intent.ACTION_MAIN).apply {
+      flags = Intent.FLAG_ACTIVITY_NEW_TASK
+      addCategory(Intent.CATEGORY_HOME)
+    }
+    startActivity(intent)
+  }
+
 }

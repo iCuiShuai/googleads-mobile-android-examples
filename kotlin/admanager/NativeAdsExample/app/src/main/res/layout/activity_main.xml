@@ -28,13 +28,13 @@
             android:id="@+id/customtemplate_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
+            android:checked="false"
             android:text="Request Custom Template Ads" />
         <CheckBox
             android:id="@+id/start_muted_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
+            android:checked="false"
             android:text="Start video ads muted" />
 
         <Button
@@ -45,6 +45,15 @@
             android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
             android:text="Refresh Ad" />
+
+        <Button
+            android:id="@+id/btn_re_render"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:text="ReRender Ad" />
 
         <TextView
             android:id="@+id/videostatus_text"
